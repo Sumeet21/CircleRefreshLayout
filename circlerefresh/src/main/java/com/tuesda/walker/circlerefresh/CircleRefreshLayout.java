@@ -253,7 +253,32 @@ public class CircleRefreshLayout extends FrameLayout {
         }
         mIsRefreshing = false;
         mHeader.setRefreshing(false);
+        
+        back();
     }
+
+    public boolean isRefreshing() {
+		return mIsRefreshing;
+	}
+
+    private void back() {
+		float height = mChildView.getTranslationY();
+		ValueAnimator backTopAni = ValueAnimator.ofFloat(height, 0);
+		backTopAni.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+			@Override
+			public void onAnimationUpdate(ValueAnimator animation) {
+				float val = (float) animation.getAnimatedValue();
+				val = decelerateInterpolator.getInterpolation(val / mHeaderHeight) * val;
+				if (mChildView != null) {
+					mChildView.setTranslationY(val);
+				}
+				mHeader.getLayoutParams().height = (int) val;
+				mHeader.requestLayout();
+			}
+		});
+		backTopAni.setDuration((long) (height * BACK_TOP_DUR / mHeaderHeight));
+		backTopAni.start();
+	}
 
     private OnCircleRefreshListener onCircleRefreshListener;
 
