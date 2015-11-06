@@ -254,7 +254,22 @@ public class CircleRefreshLayout extends FrameLayout {
         mIsRefreshing = false;
         mHeader.setRefreshing(false);
         
-        back();
+        new Timer().schedule(new TimerTask() {
+
+			@Override
+			public void run() {
+				Activity activity = (Activity) context;
+				activity.runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						back();
+					}
+				});
+
+			}
+		}, 500);
+		
     }
 
     public boolean isRefreshing() {
